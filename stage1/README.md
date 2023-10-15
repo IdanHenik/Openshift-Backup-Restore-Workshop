@@ -7,8 +7,7 @@ In this stage, you will learn how to backup and restore a MongoDB database in an
 Before you begin, ensure you have the following prerequisites in place:
 
 - Access to an OpenShift cluster with cluster-admin premissions.
-- Acces to a S3 Bucket.
-- The OADP Operator installed on your OpenShift cluster. If not installed, follow the official documentation to [install the OADP Operator](https://github.com/kastenhq/Documentation).
+- Acces to an S3 Bucket.
 
 ## Step-by-Step Guide
 
@@ -57,13 +56,13 @@ db.post.insert([
 ```bash
 db.post.find()
 ```
-![db-post](images/db-post.jpg)
+![db-post](../images/db-post.jpg)
 ### 2. OpenShift API for Data Protection Operator
 
 
 2.1 You can install the OADP Operator from the Openshift's OperatorHub. You can search for the operator using keywords such as 'oadp' or 'velero'.
 
-![OADP](images/OADP-operatorhub.jpg)
+![OADP](../images/OADP-operatorhub.jpg)
 
 Now click on 'Install'
 
@@ -122,7 +121,7 @@ spec:
           region: eu-west-1
         provider: aws
 ```
-![DPA](images/DPA.jpg)
+![DPA](../images/DPA.jpg)
 
 NOTE: you can use AWS/ODF/Minio or another provider velero support [linkforvelero]
 
@@ -134,7 +133,7 @@ The Velero CSI plugin, to backup CSI backed PVCs, will choose the VolumeSnapshot
 oc patch volumesnapshotclass <volumesnapshotclass-name> --type=merge -p '{"deletionPolicy": "Retain"}'
 oc label volumesnapshotclass <volumesnapshotclass-name> velero.io/csi-volumesnapshot-class="true"
 ```
-![CSI](images/CSI.jpg)
+![CSI](../images/CSI.jpg)
 
 ### 3.Backup Application
 At this step, you have to create a Backup CR which will backup the required application.
@@ -167,15 +166,15 @@ spec:
     - dpa-1
 ```
 The status of backup should eventually show Phase: 'Completed'
-![BK](images/BK.jpg)
+![BK](../images/BK.jpg)
 
 ### Disaster :(
 Let's assume something horrible happend and somehow the Entire Namespace got deleted.
 
 [Image of Deletion]
 
-![Deletion](images/ns-del2.jpg)
-![Deletion2](images/ns-delete.jpg)
+![Deletion](../images/ns-del2.jpg)
+![Deletion2](../images/ns-delete.jpg)
 
 ### Restore The Application
 You have been called to fix the problem and you remembered you preformed a backup.
@@ -213,11 +212,11 @@ spec:
 ```
 
 The status of restore should eventually show Phase: 'Completed'.
-![ns-restore](images/db-restore.jpg)
+![ns-restore](../images/db-restore.jpg)
 
 After a few minutes, you should see the chat application up and running.
-![db-restore](images/db-restore.jpg)
-![post-restore](images/post-restore.jpg)
+![db-restore](../images/db-restore.jpg)
+![post-restore](../images/post-restore.jpg)
 Good job !
 
 
