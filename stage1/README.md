@@ -56,7 +56,7 @@ db.post.insert([
 ```bash
 db.post.find()
 ```
-![db-post](../images/db-post.jpg)
+![db-post](stage1/images/db-post.jpg)
 ### 2. OpenShift API for Data Protection Operator
 
 
