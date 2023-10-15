@@ -56,13 +56,13 @@ db.post.insert([
 ```bash
 db.post.find()
 ```
-![db-post](https://github.com/IdanHenik/Openshift-Backup-Restore-Workshop/tree/main/stage1/images)db-post.jpg)
+![db-post](https://github.com/IdanHenik/Openshift-Backup-Restore-Workshop/tree/main/stage1/images/db-post.png)
 ### 2. OpenShift API for Data Protection Operator
 
 
 2.1 You can install the OADP Operator from the Openshift's OperatorHub. You can search for the operator using keywords such as 'oadp' or 'velero'.
 
-![OADP](../images/OADP-operatorhub.jpg)
+![OADP](images/OADP-operatorhub.png)
 
 Now click on 'Install'
 
