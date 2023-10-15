@@ -171,8 +171,6 @@ The status of backup should eventually show Phase: 'Completed'
 ### Disaster :(
 Let's assume something horrible happend and somehow the Entire Namespace got deleted.
 
-[Image of Deletion]
-
 ![Deletion](images/ns-del2.png)
 ![Deletion2](images/ns-delete.png)
 
@@ -212,11 +210,12 @@ spec:
 ```
 
 The status of restore should eventually show Phase: 'Completed'.
-![ns-restore](images/db-restore.png)
+![ns-restore](images/ns-restore.png)
 
 After a few minutes, you should see the chat application up and running.
 ![db-restore](images/db-restore.png)
 ![post-restore](images/post-restore.png)
+
 Good job !
 
 
