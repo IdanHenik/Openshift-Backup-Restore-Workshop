@@ -1,0 +1,21 @@
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  annotations:
+    velero.io/source-cluster-k8s-gitversion: v1.25.12+ba5cc25
+    velero.io/source-cluster-k8s-major-version: '1'
+    velero.io/source-cluster-k8s-minor-version: '25'
+  name: backup-demo
+  namespace: openshift-adp
+  labels:
+    velero.io/storage-location: dpa-1
+spec:
+  csiSnapshotTimeout: 10m0s
+  defaultVolumesToFsBackup: false
+  includedNamespaces:
+    - mongodb-demo
+  itemOperationTimeout: 1h0m0s
+  storageLocation: dpa-1
+  ttl: 720h0m0s
+  volumeSnapshotLocations:
+    - dpa-1
