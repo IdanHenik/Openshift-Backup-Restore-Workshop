@@ -56,7 +56,7 @@ db.post.insert([
 ```bash
 db.post.find()
 ```
-![db-post](https://github.com/IdanHenik/Openshift-Backup-Restore-Workshop/tree/main/stage1/images/db-post.png)
+![db-post](images/db-post.png)
 ### 2. OpenShift API for Data Protection Operator
 
 
@@ -80,7 +80,7 @@ secret.yaml:
 aws_access_key_id=<INSERT_VALUE>
 aws_secret_access_key=<INSERT_VALUE>
 ```
-2.3 Create DataProtectionApplication (DPA) CR [DataProtectionApplication.yaml](https://github.com/IdanHenik/Openshift-Backup-Restore-Workshop/DataProtectionApplication.yaml).:
+2.3 Create DataProtectionApplication (DPA) CR:
 ```bash
 oc apply -f DataProtectionApplication.yaml
 ```
@@ -121,9 +121,9 @@ spec:
           region: eu-west-1
         provider: aws
 ```
-![DPA](../images/DPA.jpg)
+![DPA](images/DPA.png)
 
-NOTE: you can use AWS/ODF/Minio or another provider velero support [linkforvelero]
+NOTE: you can use AWS/ODF/Minio or another provider velero support [[linkforvelero](https://velero.io/docs/v0.11.0/support-matrix/)]
 
 2.4 Modify VolumeSnapShotClass
 
@@ -133,7 +133,7 @@ The Velero CSI plugin, to backup CSI backed PVCs, will choose the VolumeSnapshot
 oc patch volumesnapshotclass <volumesnapshotclass-name> --type=merge -p '{"deletionPolicy": "Retain"}'
 oc label volumesnapshotclass <volumesnapshotclass-name> velero.io/csi-volumesnapshot-class="true"
 ```
-![CSI](../images/CSI.jpg)
+![CSI](images/CSI.png)
 
 ### 3.Backup Application
 At this step, you have to create a Backup CR which will backup the required application.
@@ -166,15 +166,15 @@ spec:
     - dpa-1
 ```
 The status of backup should eventually show Phase: 'Completed'
-![BK](../images/BK.jpg)
+![BK](images/BK.png)
 
 ### Disaster :(
 Let's assume something horrible happend and somehow the Entire Namespace got deleted.
 
 [Image of Deletion]
 
-![Deletion](../images/ns-del2.jpg)
-![Deletion2](../images/ns-delete.jpg)
+![Deletion](images/ns-del2.png)
+![Deletion2](images/ns-delete.png)
 
 ### Restore The Application
 You have been called to fix the problem and you remembered you preformed a backup.
@@ -212,11 +212,11 @@ spec:
 ```
 
 The status of restore should eventually show Phase: 'Completed'.
-![ns-restore](../images/db-restore.jpg)
+![ns-restore](images/db-restore.png)
 
 After a few minutes, you should see the chat application up and running.
-![db-restore](../images/db-restore.jpg)
-![post-restore](../images/post-restore.jpg)
+![db-restore](images/db-restore.png)
+![post-restore](images/post-restore.png)
 Good job !
 
 
