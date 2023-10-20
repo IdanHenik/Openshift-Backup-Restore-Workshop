@@ -1,0 +1,22 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: restore-backup
+  namespace: openshift-adp
+spec:
+  backupName: backup-demo-rocket-chat
+  excludedResources:
+    - nodes
+    - events
+    - events.events.k8s.io
+    - backups.velero.io
+    - restores.velero.io
+    - resticrepositories.velero.io
+    - csinodes.storage.k8s.io
+    - volumeattachments.storage.k8s.io
+    - backuprepositories.velero.io
+  includedNamespaces:
+    - rocket-chat
+  itemOperationTimeout: 1h0m0s
+  restorePVs: true
+

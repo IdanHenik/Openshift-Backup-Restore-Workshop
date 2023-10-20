@@ -1,0 +1,77 @@
+kind: CronJob
+apiVersion: batch/v1
+metadata:
+  name: rocket-chat-updater
+  namespace: openshift-adp
+spec:
+  schedule: '*/20 * * * *'
+  concurrencyPolicy: Allow
+  suspend: false
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          containers:
+            - name: restore-schedule
+              image: bitnami/kubectl
+              command:
+              - "/bin/sh"
+              - "-c"
+              - |
+                # Capture the newest backup name
+                NEWEST_BACKUP_NAME=$(kubectl get backups -n <your-namespace> --sort-by=.metadata.creationTimestamp -o json | jq -r '.items[-1].metadata.name')
+
+                # Create the Velero Restore CR with the captured pod name as the backupName
+                cat <<EOF | kubectl apply -f -
+                apiVersion: velero.io/v1
+                kind: Restore
+                metadata:
+                  name: restore-rocket-chat
+                  namespace: openshift-adp
+                spec:
+                  backupName: $NEWEST_BACKUP_NAME
+                  # Rest of your Velero Restore CR specification
+                  spec:
+                    hooks:
+                      resources:
+                        - includedNamespaces:
+                            - rocket-chat
+                          labelSelector:
+                            matchExpressions:
+                              - key: posthook
+                                operator: Exists
+                          postHooks:
+                            - exec:
+                                command:
+                                  - /bin/sh
+                                  - '-c'
+                                  - >-
+                                    sleep 60 && mongo rocket-chat-db:27017 --eval
+                                    "rs.initiate({_id: 'rs0', members: [{_id:0,
+                                    host:'localhost:27017'}]})"
+                                execTimeout: 1m
+                                waitTimeout: 5m
+                                onError: Fail
+                                container: rocketchat-db # which contianer to execute the hook on
+                          name: restore-hook-1
+                    backupName: backup-who-is
+                    existingResourcePolicy: update # if mentioned it will update resources and not skip if exsist
+                    restorePVs: true # allow to restore pvs
+                EOF
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+          restartPolicy: OnFailure
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          serviceAccountName: velero
+          serviceAccount: velero #use velero serviceaccount or create you own
+          securityContext: {}
+          schedulerName: default-scheduler
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1

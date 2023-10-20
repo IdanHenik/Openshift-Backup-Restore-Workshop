@@ -1,0 +1,31 @@
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: restore-rocket-chat
+  namespace: openshift-adp
+spec:
+  hooks:
+    resources:
+      - includedNamespaces:
+          - rocket-chat
+        labelSelector:
+          matchExpressions:
+            - key: posthook
+              operator: Exists
+        postHooks:
+          - exec:
+              command:
+                - /bin/sh
+                - '-c'
+                - >-
+                  sleep 60 && mongo rocket-chat-db:27017 --eval
+                  "rs.initiate({_id: 'rs0', members: [{_id:0,
+                  host:'localhost:27017'}]})"
+              execTimeout: 1m
+              waitTimeout: 5m
+              onError: Fail
+              container: rocketchat-db # which contianer to execute the hook on
+        name: restore-hook-1
+  backupName: backup-who-is
+  existingResourcePolicy: update # if mentioned it will update resources and not skip if exsist
+  restorePVs: true # allow to restore pvs
