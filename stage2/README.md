@@ -29,7 +29,8 @@ At this scenario we will backup manually the application from the primary cluste
    ```
    Insert the URL and keep with the setup guidelines.
 
-   ![workspace](images/workspace.png)
+   a
+
   Hit on 'Enter' to continue and keep a head with the guidelines.
 
 
@@ -64,7 +65,8 @@ spec:
     - dpa-1
 ```
 ### 3. Configure the passive cluster
-3.1 Install OADP - you can use the guidelines from stage I
+3.1 Install OADP - you can use the guidelines from stage 1 [Stage 1: Backup and Restore MongoDB using OADP](stage1/stage1.md)
+
 3.2 Create Credentails secret for OADP operator to use.
 
 ```bash
@@ -82,7 +84,7 @@ aws_secret_access_key=<INSERT_VALUE>
 oc apply -f DataProtectionApplication.yaml
 ```
 DataProtectionApplication.yaml:
-### change the prefix name
+
 ```yaml
 apiVersion: oadp.openshift.io/v1alpha1
 kind: DataProtectionApplication
@@ -101,7 +103,7 @@ spec:
         default: true
         objectStorage:
           bucket: backup-demo-ihenik #BucketName
-          prefix: stage1 #PrefixName
+          prefix: backup-demo #PrefixName
         provider: aws
   configuration:
     restic:
@@ -128,7 +130,7 @@ oc label volumesnapshotclass <volumesnapshotclass-name> velero.io/csi-volumesnap
 ```
 Great, now that all set we should be able to see under 'Backup' tab the backup we created at step 2.
 
-[BackupIMAGE]
+![workspace](images/backup-show.png)
 
 ### 4. Preform a Restore at the passive cluster
 4.1 You know what to do now, In order to restore the backup you have to create a 'Restore' CR:
@@ -160,16 +162,15 @@ spec:
   itemOperationTimeout: 1h0m0s
   restorePVs: true #Restore the PVs as well
 ```
-If you navigate to the application namespace (rocket-chat) you will see the following mess:
-[image-mess]
-But why? When OADP execute a restore-flow the 'restore-controller' follows a 'existingUpdatePolicy',by default if the controller dedcted that object exists it will skip.
-In this case we should change the policy value to 'update' which means the controller will update the exisiting resources.
+When you navigate to the application namespace (rocket-chat), you will encounter the following situation: 
+![workspace](images/mess.png)
 
-There is more...as you proably know an application might have pre-configuration tasks to function properly.
-That's why each backup need to be characterized carefully !
+But why does this occur? When OADP executes a restore flow, the 'restore-controller' follows an 'existingUpdatePolicy' as the default behavior. If the controller detects that the object already exists, it will skip the operation. In this case, we should modify the policy value to 'update', which instructs the controller to update the existing resources.
 
-In our example the mongo-db must initiate a replica set named "rs0" with a single member.
-To accomplish that requirement we can use 'restore-hooks', the hook will execute the mentioned command AFTER the restore completed inside a specific container.
+But there's more to it. As you probably know, an application might require specific pre-configuration tasks to function properly. 
+That's why it's essential to characterize each backup carefully.
+
+In our example, the MongoDB instance must initialize a replica set named "rs0" with a single member. To meet this requirement, we can utilize 'restore-hooks.' These hooks will execute the specified command after the restore process has been completed inside a designated container.
 
 4.2 Now after we learn few things let's deploy the Restore in the right way:
 ```bash
@@ -213,14 +214,13 @@ spec:
 Now if you navigate to the app's routes in each cluster you need to see the following state:
 ![workspace](images/same-start.png)
 
-Excellent ! but what happen when the application writes more data for the volume ? to execute this all procedure manaully is discouraging..
+Excellent ! but what happen when the application continues to write more data to the volume ? Manually executing this entire procedure can be quite daunting...
 
 Let's see how to deal with that in the next scenriao
 ## Scenario II
-As mentioned above applications nativley writes new-data,changing or deleting old data and to backup manually seems not to be so effcicent, of course if we talking about active-passive architecture we defntility dont wont to restore each compenonet manually.
-So how we deal with it ? At this scenario we will preform a 'scheduled' backup and restore.
+As mentioned earlier, applications naturally generate new data, modify existing data, and manually managing backups may not be the most efficient approach. This is particularly true in the context of an active-passive architecture where we definitely don't want to restore each component manually. So, how do we address this? In this scenario, we implement a 'scheduled' backup and restore strategy.
 
-Let's create some data by creating a new channel and some messeages:
+First Let's create some data by creating a new channel and some messeages:
 ![workspace](images/channel.png)
 ![workspace](images/mesg.png)
 
@@ -251,11 +251,12 @@ Schedule.yaml:
       ttl: 720h0m0s #backup-expried time
 ```
 After creating this CR a backup will created schedually by the time-period you mentioned.
+
 ![workspace](images/scheduled-backup.png)
 
 ### 2. Creating a scheduled Restore at the passive-cluster
 
-Unfortunately OADP not able to schedule a restore but don't worry because god created the cronjobs :)
+Unfortunately, OADP isn't equipped to schedule a restore, but don't fret, because good old cron jobs come to the rescue! :)
 2.1 Create a crobjob to restore schedullay the newest backup:
 ```bash
 oc apply -f CronJob.yaml
@@ -343,7 +344,6 @@ If a disaster will happend, you're are now ready for it !
 Every 25 mintues a new restore will be triggred, the restore will trigger a post-hook and as result we will recive an active-passive sync between the apps.
 ![workspace](images/synced.png)
 
-NOTE In production environments we will configure a Global Load Balancer between the apps to achive seamless expriment for our customers.
+Note: In production environments, we configure a Global Load Balancer between the applications to ensure a seamless experience for our customers.
 
-So far, you accomplished basic statefulsets backups and restores, locally and among clusters, you impmeneted a schedule machnisim in order to achive active-passive sync
-If you feel ready to escalte the scenrio and to fully backup and restore clusters and cluster-hubs continue to the next stage :)
+So far, you've successfully completed basic stateful sets backups and restores, both locally and across clusters. You've also implemented a scheduling mechanism to achieve active-passive synchronization. If you're ready to take the scenario to the next level and fully backup and restore clusters and cluster hubs, proceed to the next stage :)
