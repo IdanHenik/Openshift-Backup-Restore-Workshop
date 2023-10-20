@@ -287,8 +287,9 @@ spec:
               - "/bin/sh"
               - "-c"
               - |
+                kubectl delete pods --all -n rocket-chat
                 # Capture the newest backup name
-                NEWEST_BACKUP_NAME=$(kubectl get backups -n <your-namespace> --sort-by=.metadata.creationTimestamp -o json | jq -r '.items[-1].metadata.name')
+                NEWEST_BACKUP_NAME=$(kubectl get backups -n openshift-adp --sort-by=.metadata.creationTimestamp -o json | jq -r '.items[-1].metadata.name')
 
                 # Create the Velero Restore CR with the captured backup name as the backupName
                 cat <<EOF | kubectl apply -f -
@@ -298,32 +299,31 @@ spec:
                   name: restore-rocket-chat
                   namespace: openshift-adp
                 spec:
+                  hooks:
+                    resources:
+                      - name: restore-hook-1
+                        includedNamespaces:
+                          - rocket-chat
+                        labelSelector:
+                          matchExpressions:
+                            - key: posthook
+                              operator: Exists
+                        postHooks:
+                          - exec:
+                              command:
+                                - /bin/sh
+                                - '-c'
+                                - >-
+                                  sleep 60 && mongo rocket-chat-db:27017 --eval
+                                  "rs.initiate({_id: 'rs0', members: [{_id:0,
+                                  host:'localhost:27017'}]})"
+                              execTimeout: 1m 
+                              waitTimeout: 5m 
+                              onError: Fail 
+                              container: rocketchat-db # which contianer to execute the hook on 
+                  existingResourcePolicy: update # if mentioned it will update resources and not skip if exsist 
+                  restorePVs: true # allow to restore pvs
                   backupName: $NEWEST_BACKUP_NAME
-                  # Rest of your Velero Restore CR specification
-                   hooks:
-                      resources:
-                        - includedNamespaces:
-                            - rocket-chat
-                          labelSelector:
-                            matchExpressions:
-                              - key: posthook
-                                operator: Exists
-                          postHooks:
-                            - exec:
-                                command:
-                                  - /bin/sh
-                                  - '-c'
-                                  - >-
-                                    sleep 60 && mongo rocket-chat-db:27017 --eval
-                                    "rs.initiate({_id: 'rs0', members: [{_id:0,
-                                    host:'localhost:27017'}]})"
-                                execTimeout: 1m
-                                waitTimeout: 5m
-                                onError: Fail
-                                container: rocketchat-db # which contianer to execute the hook on
-                          name: restore-hook-
-                    existingResourcePolicy: update # if mentioned it will update resources and not skip if exsist
-                    restorePVs: true # allow to restore pvs
                 EOF
               resources: {}
               terminationMessagePath: /dev/termination-log
