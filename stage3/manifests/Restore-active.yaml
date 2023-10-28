@@ -1,0 +1,11 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Restore
+metadata:
+  name: restore-active-sync
+spec:
+  syncRestoreWithNewBackups: true
+  restoreSyncInterval: 15m
+  cleanupBeforeRestore: CleanupRestored
+  veleroManagedClustersBackupName: latest
+  veleroCredentialsBackupName: latest
+  veleroResourcesBackupName: latest

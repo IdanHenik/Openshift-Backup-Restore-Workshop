@@ -1,0 +1,11 @@
+apiVersion: cluster.open-cluster-management.io/v1beta1
+kind: Restore
+metadata:
+  name: restore-passive-sync
+spec:
+  syncRestoreWithNewBackups: true
+  restoreSyncInterval: 15m
+  cleanupBeforeRestore: CleanupRestored
+  veleroManagedClustersBackupName: skip
+  veleroCredentialsBackupName: latest
+  veleroResourcesBackupName: latest
