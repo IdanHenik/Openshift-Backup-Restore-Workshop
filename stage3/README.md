@@ -130,8 +130,8 @@ oc create -f https://github.com/IdanHenik/argocd-dr/blob/main/Passive-Cluster/OC
 ```
 policy uses Open Cluster Management to mutate and locate any custom resource that matches kind: AppProject, and modify it to contain the SyncWindow block type, which is scheduled for day (24h). This stops syncs on the passive cluster. View the following images that show there is no sync from the console
 
-![policy](images/argocd-policy.png)
-![app-project](images/aro-appproject.png)
+![policy](images/policy.png)
+![app-project](images/argo-appproject.png)
 
 4.2 We are now ready and set to restore the passive data, let take a look at the diffrence between the instace pre-restore
 ![pre-restore](images/argocd-pre-restore1.png)
