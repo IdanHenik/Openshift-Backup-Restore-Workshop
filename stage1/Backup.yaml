@@ -11,7 +11,7 @@ metadata:
     velero.io/storage-location: dpa-1
 spec:
   csiSnapshotTimeout: 10m0s
-  defaultVolumesToFsBackup: false
+  defaultVolumesToFsBackup: true
   includedNamespaces:
     - mongodb-demo
   itemOperationTimeout: 1h0m0s
