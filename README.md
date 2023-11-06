@@ -1,10 +1,10 @@
-# OpenShift StatefulSets Backup and Restore Workshop
+# OpenShift OADP Workshop
 
-Welcome to the OpenShift StatefulSets Backup and Restore Workshop! This workshop is designed to provide you with hands-on experience in backing up and restoring stateful applications in OpenShift using various tools and techniques.
+Welcome to the OpenShift OADP Workshop! This workshop is designed to provide you with hands-on experience in backing up and restoring applications in OpenShift using various tools and techniques.
 
 ## Workshop Overview
 
-This workshop is divided into three stages, each focusing on different aspects of stateful application backup and restore in OpenShift. Please follow the links below to access each stage:
+This workshop is divided into three stages, each focusing on different aspects of application backup and restore methods using OADP on top of OpenShift. Please follow the links below to access each stage:
 
 1. [Stage 1: Backup and Restore MongoDB using OADP](stage1/README.md)
 2. [Stage 2: Backup and Restore RocketChat between OpenShift Clusters using OADP](stage2/README.md)
