@@ -1,6 +1,6 @@
 # Stage 1: Backup and Restore MongoDB using OADP in OpenShift
 
-In this stage, you will learn how to backup and restore a MongoDB database in an OpenShift cluster using the OADP (OpenShift Application Data Protection) Operator. MongoDB is a popular NoSQL database, and it's essential to know how to perform data protection tasks in a containerized environment like OpenShift.
+In this stage, you will learn how to backup and restore a MongoDB database in an OpenShift cluster using the OADP (OpenShift Application Data Protection) Operator. MongoDB is a popular NoSQL database which we will use as a classic use-case, it's essential to know how to perform data protection tasks in a containerized environment like OpenShift.
 
 ## Prerequisites
 
